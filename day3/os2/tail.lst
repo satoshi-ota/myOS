@@ -1,0 +1,7 @@
+     1                                  ;ブートセクタ以外の部分
+     2 00000000 F0FFFF0000000000            DB  0xf0,0xff,0xff,0x00,0x00,0x00,0x00,0x00
+     3 00000008 <res 000011F8>              RESB    4600
+     3          ******************       warning: uninitialized space declared in .text section: zeroing
+     4 00001200 F0FFFF0000000000            DB  0xf0,0xff,0xff,0x00,0x00,0x00,0x00,0x00
+     5 00001208 <res 00166BF8>              RESB    1469432
+     5          ******************       warning: uninitialized space declared in .text section: zeroing

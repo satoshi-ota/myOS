@@ -1,0 +1,84 @@
+     1                                  ;hello-os
+     2                                  ;TAB=4
+     3                                  
+     4                                      ORG		0x7c00
+     5                                  
+     6                                  ;floppy
+     7 00000000 EB4E                        JMP entry
+     8 00000002 90                          DB  0x90
+     9 00000003 48415249424F5445            DB  "HARIBOTE"
+    10 0000000B 0002                        DW  512
+    11 0000000D 01                          DB  1
+    12 0000000E 0100                        DW  1
+    13 00000010 02                          DB  2
+    14 00000011 E000                        DW  224
+    15 00000013 400B                        DW  2880
+    16 00000015 F0                          DB  0xf0
+    17 00000016 0900                        DW  9
+    18 00000018 1200                        DW  18
+    19 0000001A 0200                        DW  2
+    20 0000001C 00000000                    DD  0
+    21 00000020 400B0000                    DD  2880
+    22 00000024 000029                      DB  0,0,0x29
+    23 00000027 FFFFFFFF                    DD  0xffffffff
+    24 0000002B 48454C4C4F2D4F5320-         DB  "HELLO-OS   "
+    24 00000034 2020               
+    25 00000036 4641543132202020            DB  "FAT12   "
+    26 0000003E <res 00000012>              RESB    18
+    26          ******************       warning: uninitialized space declared in .text section: zeroing
+    27                                  
+    28                                  entry:
+    29 00000050 B80000                      MOV AX,0
+    30 00000053 8ED0                        MOV SS,AX
+    31 00000055 BC007C                      MOV SP,0x7c00
+    32 00000058 8ED8                        MOV DS,AX
+    33                                  
+    34 0000005A B82008                      MOV AX,0x0820
+    35 0000005D 8EC0                        MOV ES,AX
+    36 0000005F B500                        MOV CH,0
+    37 00000061 B600                        MOV DH,0
+    38 00000063 B102                        MOV CL,2
+    39                                  
+    40 00000065 BE0000                      MOV SI,0
+    41                                  
+    42                                  retry:
+    43 00000068 B402                        MOV AH,0x02
+    44 0000006A B001                        MOV AL,1
+    45 0000006C BB0000                      MOV BX,0
+    46 0000006F B200                        MOV DL,0x00
+    47 00000071 CD13                        INT 0x13
+    48 00000073 7310                        JNC fin
+    49 00000075 83C601                      ADD SI,1
+    50 00000078 83FE05                      CMP SI,5
+    51 0000007B 730B                        JAE error
+    52 0000007D B400                        MOV AH,0x00
+    53 0000007F B200                        MOV DL,0x00
+    54 00000081 CD13                        INT 0x13
+    55 00000083 EBE3                        JMP retry
+    56                                  
+    57                                  fin:
+    58 00000085 F4                          HLT
+    59 00000086 EBFD                        JMP fin
+    60                                  
+    61                                  error:
+    62 00000088 BE[9D00]                    MOV SI,msg
+    63                                  
+    64                                  putloop:
+    65 0000008B 8A04                        MOV AL,[SI]
+    66 0000008D 83C601                      ADD SI,1
+    67 00000090 3C00                        CMP AL,0
+    68 00000092 74F1                        JE  fin
+    69 00000094 B40E                        MOV AH,0x0e
+    70 00000096 BB0F00                      MOV BX,15
+    71 00000099 CD10                        INT 0x10
+    72 0000009B EBEE                        JMP putloop
+    73                                  
+    74                                  msg:
+    75 0000009D 0A0A                        DB  0x0a,0x0a
+    76 0000009F 6C6F6164206572726F-         DB  "load error"
+    76 000000A8 72                 
+    77 000000A9 0A                          DB  0x0a
+    78 000000AA 00                          DB  0
+    79 000000AB <res 00000153>              RESB    0x1fe-($-$$)
+    79          ******************       warning: uninitialized space declared in .text section: zeroing
+    80 000001FE 55AA                        DB	0x55, 0xaa
